@@ -17,3 +17,4 @@ M:\420-226-A19\Pacman\C#\Pacman_Game\obj\x86\Debug\Pacman_Game.csproj.GenerateRe
 M:\420-226-A19\Pacman\C#\Pacman_Game\obj\x86\Debug\Pacman_Game.csproj.CoreCompileInputs.cache
 M:\420-226-A19\Pacman\C#\Pacman_Game\obj\x86\Debug\Packman_Game.exe
 M:\420-226-A19\Pacman\C#\Pacman_Game\obj\x86\Debug\Packman_Game.pdb
+M:\420-226-A19\Pacman\C#\Pacman_Game\obj\x86\Debug\Pacman_Game.csprojResolveAssemblyReference.cache
