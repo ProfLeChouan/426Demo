@@ -62,16 +62,31 @@
     <Compile Include="Characters\Pacman.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Form1.cs">
+    <Compile Include="Jeu2.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Jeu2.Designer.cs">
+      <DependentUpon>Jeu2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Jeu1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Jeu1.Designer.cs">
+      <DependentUpon>Jeu1.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="UCScene1.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UCScene1.Designer.cs">
+      <DependentUpon>UCScene1.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Jeu2.resx">
+      <DependentUpon>Jeu2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Jeu1.resx">
+      <DependentUpon>Jeu1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -82,6 +97,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UCScene1.resx">
+      <DependentUpon>UCScene1.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

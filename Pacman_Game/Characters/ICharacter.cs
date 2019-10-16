@@ -16,7 +16,8 @@ namespace Packman_Game.Characters
         Up,
         Down,
         Left,
-        Right
+        Right,
+        None
     }
 
     public interface ICharacter : IDisposable
@@ -25,5 +26,6 @@ namespace Packman_Game.Characters
         int Speed { get; set; }
         CharacterType Type { get; }
         void Move(MovementWay way);
+
     }
 }

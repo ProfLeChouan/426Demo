@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -11,29 +12,45 @@ namespace Packman_Game.Characters
     public class Enemy : System.Windows.Forms.Control, ICharacter
     {
         public event Enemy_Movement Enemy_Movement;
-        public event Enemy_PacmanCatched Enemy_PacmanCatched;
 
         Pacman _pacman = null;
 
         public Enemy()
         {
             this.Height = this.Width = 40;
+
         }
 
         public Enemy(Characters.Pacman pacman)
             :this()
         {
+            Initialize(pacman);
+        }
+
+        public void Initialize(Characters.Pacman pacman)
+        {
             _pacman = pacman;
             Enemy_Movement += new Characters.Enemy_Movement(Enemy_Enemy_Movement);
+            _pacman.Pacman_Movement += Enemy_Pacman_Movement;
+        }
+
+        private void Enemy_Pacman_Movement(object sender, Point location)
+        {
+            if (location.X > this.Location.X)
+                Move(MovementWay.Right);
+            else
+                Move(MovementWay.Left);
+
+            if (location.Y > this.Location.Y)
+                Move(MovementWay.Down);
+            else
+                Move(MovementWay.Up);
         }
 
         void Enemy_Enemy_Movement(object sender, System.Drawing.Point location)
         {
-            if (_pacman.Location == location)
+            if (_pacman?.Intersect(this) == true)
             {
-                if (Enemy_PacmanCatched != null)
-                    Enemy_PacmanCatched(this);
-
                 _pacman.Catched(this);
             }
         }
@@ -65,15 +82,7 @@ namespace Packman_Game.Characters
                     break;
             }
 
-            if (_pacman != null)
-            {
-                Enemy_Movement(this, this.Location);
-                return;
-            }
-
-            if (Enemy_Movement != null)
-                Enemy_Movement(this, this.Location);
-
+            Enemy_Movement?.Invoke(this, this.Location);
         }
 
         protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
@@ -94,7 +103,7 @@ namespace Packman_Game.Characters
             }
         }
 
-        int m_Speed = 20;
+        int m_Speed = 10;
         public int Speed
         {
             get

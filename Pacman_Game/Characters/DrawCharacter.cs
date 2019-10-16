@@ -8,13 +8,14 @@ namespace Packman_Game.Characters
 {
     public sealed class DrawCharacter
     {
-        public static void Draw(ref System.Windows.Forms.PaintEventArgs e, CharacterType type,MovementWay way = MovementWay.Right)
+        public static void Draw(ref System.Windows.Forms.PaintEventArgs e, CharacterType type, MovementWay way = MovementWay.Right)
         {
+            Console.WriteLine($"DrawCharacter {type} {way}");
             switch (type)
             {
                 case CharacterType.Packman:
                     e.Graphics.Clear(System.Drawing.SystemColors.Control);
-                    e.Graphics.FillEllipse(System.Drawing.Brushes.Blue, new System.Drawing.Rectangle(0, 0, 40, 40));
+                    e.Graphics.FillEllipse(System.Drawing.Brushes.Yellow, new System.Drawing.Rectangle(0, 0, 40, 40));
                     switch (way)
                     {
                         case MovementWay.Right:
