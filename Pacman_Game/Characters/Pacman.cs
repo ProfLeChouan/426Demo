@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing.Drawing2D;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace Packman_Game.Characters
 {
@@ -34,26 +35,29 @@ namespace Packman_Game.Characters
             this.Pacman_Movement += new Characters.Pacman_Movement(Pacman_Pacman_Movement);
         }
 
+
         public Pacman(ref Dots[] dots, ref Block[] blocks)
             : this(ref dots)
         {
             _Blocks = blocks;
         }
-
-        public Pacman(ref Block[] blocks)
-            : this()
+        public void Initialize(ref Dots[] dots, ref Block[] blocks)
         {
             _Blocks = blocks;
+            _Dots = dots;
+            this.Pacman_Movement += new Characters.Pacman_Movement(Pacman_Pacman_Movement);
+            TotalPoints = 0;
         }
 
+        //à chaque mouvement de pacman on ajoute les points du Dot absorbé
         void Pacman_Pacman_Movement(object sender, System.Drawing.Point location)
         {
             for (int i = 0; i <= _Dots.Length - 1; i++)
             {
                 if (_Dots[i] == null)
                     continue;
-
-                if (_Dots[i].Location.X >= location.X && _Dots[i].Location.X <= (location.X + (this.Width/3)) && _Dots[i].Location.Y >= location.Y && _Dots[i].Location.Y <= ((this.Height/3)+ location.Y))
+                if (this.Intersect(_Dots[i]))
+                //if (_Dots[i].Location.X >= location.X && _Dots[i].Location.X <= (location.X + (this.Width/3)) && _Dots[i].Location.Y >= location.Y && _Dots[i].Location.Y <= ((this.Height/3)+ location.Y))
                 {
                     (sender as Characters.Pacman).TotalPoints += _Dots[i].Points;
                     _Dots[i].Dispose();
@@ -63,82 +67,57 @@ namespace Packman_Game.Characters
 
             if ((_Dots.Where(d => d != null).Count() < 1))
             {
-                if (Pacman_Messages != null)
-                    Pacman_Messages(this, "You win !!");
+                Pacman_Messages?.Invoke(this, "You win !!");
             }
+        }
+
+        public bool Intersect(Control c)
+        {
+            if (c == null)
+                return false;
+
+            Point loc = new Point();
+            loc = GetNewLocation(this._Movement);
+            Rectangle rect = new Rectangle(loc, this.Size);
+            Rectangle blocRect = new Rectangle(c.Location, c.Size);
+            return rect.IntersectsWith(blocRect);
         }
 
         private bool IsBlock()
         {
             bool result = false;
-
-
-            Point loc = new Point();
-            loc.X = this.Location.X;
-            loc.Y = this.Location.Y;
-
-            if (_Movement == MovementWay.Right)
-                loc.X += this.Width;
-
+            
             for (int i = 0; i <= _Blocks.Length -1; i++)
             {
                 if (_Blocks[i] == null)
                     continue;
 
-                switch (_Movement)
-                {
-                    case MovementWay.Right:
-                        if (loc.X == _Blocks[i].Location.X)
-                        {
-                            if (loc.Y >= (_Blocks[i].Location.Y - Speed) && loc.Y <= (_Blocks[i].Location.Y + _Blocks[i].Height - Speed))
-                            {
-                                result = true;
-                                break;
-                            }
-                        }
-                        break;
-                    case MovementWay.Left:
-                        if (loc.X == (_Blocks[i].Location.X + _Blocks[i].Width))
-                        {
-                            if (loc.Y >= (_Blocks[i].Location.Y - Speed)&& loc.Y <= (_Blocks[i].Location.Y + _Blocks[i].Height - Speed))
-                            {
-                                result = true;
-                                break;
-                            }
-                        }
-                        break;
-
-                    case MovementWay.Up:
-                        if (loc.Y == (_Blocks[i].Location.Y + _Blocks[i].Height))
-                        {
-                            if (loc.X >= (_Blocks[i].Location.X - Speed) && loc.X <= (_Blocks[i].Location.X + _Blocks[i].Width - Speed))
-                            {
-                                result = true;
-                                break;
-                            }
-                        }
-                        break;
-
-                    case MovementWay.Down:
-                        if ((loc.Y + this.Height) == _Blocks[i].Location.Y)
-                        {
-                            if (loc.X >= (_Blocks[i].Location.X - Speed) && loc.X <= (_Blocks[i].Location.X + _Blocks[i].Width -Speed))
-                            {
-                                result = true;
-                                break;
-                            }
-                        }
+                
+                if (this.Intersect(_Blocks[i]) ) { 
+                        result = true;
                         break;
                 }
-
-
-
 
             }
 
             return result;
         }
 
+        Point GetNewLocation(MovementWay way)
+        {
+            switch (way)
+            {
+                case MovementWay.Up:
+                    return new System.Drawing.Point(this.Location.X, this.Location.Y - Speed);
+                case MovementWay.Down:
+                    return new System.Drawing.Point(this.Location.X, this.Location.Y + Speed);
+                case MovementWay.Left:
+                    return new System.Drawing.Point(this.Location.X - Speed, this.Location.Y);
+                case MovementWay.Right:
+                    return new System.Drawing.Point(this.Location.X + Speed, this.Location.Y);
+            }
+            return new Point();
+        }
 
         public new void Move(MovementWay way)
         {
@@ -168,16 +147,7 @@ namespace Packman_Game.Characters
                         this.Location = new System.Drawing.Point(this.Location.X + Speed, this.Location.Y);
                         break;
                 }
-
-            if (_Dots != null)
-            {
-                Pacman_Movement(this, this.Location);
-                return;
-            }
-
-            if (Pacman_Movement != null)
-                Pacman_Movement(this, this.Location);
-
+            Pacman_Movement?.Invoke(this, this.Location);
         }
 
         private void FillRegion()
@@ -210,11 +180,14 @@ namespace Packman_Game.Characters
 
         protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
         {
+            Console.WriteLine($"Pacman OnPaint {e.ClipRectangle} ");
+
             DrawCharacter.Draw(ref e, Type, _Movement);
 
             FillRegion();
 
             base.OnPaint(e);
+
         }
 
         private MovementWay _Movement = MovementWay.Right;
@@ -238,8 +211,7 @@ namespace Packman_Game.Characters
             set
             {
                 m_TotalPoints = value;
-                if (Pacman_PointsChanged != null)
-                    Pacman_PointsChanged(this, value);
+                Pacman_PointsChanged?.Invoke(this, value);
             }
         }
 
@@ -254,8 +226,7 @@ namespace Packman_Game.Characters
 
             _Catched = true;
 
-            if (Pacman_Messages != null)
-                Pacman_Messages(this, "Pacman has been catched by an enemy.");
+            Pacman_Messages?.Invoke(this, "Pacman has been catched by an enemy.");
         }
 
         int m_Speed = 20;
